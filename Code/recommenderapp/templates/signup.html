@@ -193,6 +193,13 @@
                 });
             });
         });
+        function showAlert(success, message) {
+            if (success) {
+                swal("Success!", message, "success");
+            } else {
+                swal("Error!", message, "error");
+            }
+        }
     </script>
 </body>
 

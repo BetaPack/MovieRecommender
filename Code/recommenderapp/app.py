@@ -19,8 +19,8 @@ app = Flask(__name__)
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'movierecommenderx@gmail.com'  # Replace with your email
-app.config['MAIL_PASSWORD'] = 'Movies@123'  # Replace with your email password or app-specific password
+app.config['MAIL_USERNAME'] = 'movierecommenderx@gmail.com'
+app.config['MAIL_PASSWORD'] = 'asbu qwds itjg wpho'  # Use the App Password here
 mail = Mail(app)
 app.secret_key = "secret key"
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -39,7 +39,13 @@ def load_users():
         df.to_csv(USER_CSV, index=False)
         return {}
     try:
-        return pd.read_csv(USER_CSV).set_index("email").to_dict(orient="index")
+        # Load users and check for unique emails
+        df = pd.read_csv(USER_CSV)
+        if df['email'].duplicated().any():
+            print("Warning: Duplicate emails found in users.csv. Removing duplicates.")
+            df = df[~df['email'].duplicated(keep='first')]  # Keep only the first occurrence
+            df.to_csv(USER_CSV, index=False)
+        return df.set_index("email").to_dict(orient="index")
     except KeyError:
         df = pd.DataFrame(columns=["email", "password"])
         df.to_csv(USER_CSV, index=False)
@@ -47,8 +53,14 @@ def load_users():
 
 # Save user credentials to CSV
 def save_user(email, password):
+    # Check if the email already exists
+    if email in users:
+        print(f"User with email {email} already exists. Account creation failed.")
+        return
+
+    # Append new user data to CSV file
     df = pd.DataFrame([[email, password]], columns=["email", "password"])
-    df.to_csv(USER_CSV, mode="a", index=False, header=not os.path.exists(USER_CSV))
+    df.to_csv(USER_CSV, mode='a', index=False, header=not os.path.exists(USER_CSV))
 
 # Load users initially
 users = load_users()
@@ -110,31 +122,33 @@ def landing_page():
         return render_template("landing_page.html")
     return redirect(url_for('logsign_page'))
 
-@app.route("/login", methods=["POST"])
+@app.route("/", methods=["POST"])
 def login():
     data = json.loads(request.data)
     email = data.get('email')
     password = data.get('password')
     
-    # Check if the user exists and verify password
     user = users.get(email)
     if user and user['password'] == password:
         session['user'] = email  # Set user session
-        return jsonify({"success": True}), 200
-    return jsonify({"success": False, "message": "Invalid credentials"}), 401
+        return jsonify({"success": True, "message": "Login successful!"}), 200
+    return jsonify({"success": False, "message": "Invalid credentials."}), 401
 
-@app.route("/send-otp", methods=["POST"])
+
+# Temporary dictionary to store OTPs and their verification status during the session
+otp_storage = {}
+
 def send_otp():
     data = json.loads(request.data)
     email = data.get('email')
     
     # Generate a random OTP
     otp = random.randint(100000, 999999)
-    users[email] = {'password': '', 'otp': otp, 'is_verified': False}  # Store user with OTP
+    otp_storage[email] = {'otp': otp, 'is_verified': False}  # Store OTP and verification status temporarily
     
     # Sending OTP via email
     try:
-        msg = Message("Your OTP Code", sender=app.config['movierecommenderx@gmail.com'], recipients=[email])
+        msg = Message("Your OTP Code", sender=app.config['MAIL_USERNAME'], recipients=[email])
         msg.body = f"Your OTP code is {otp}. Please enter this code to verify your email."
         mail.send(msg)
         print(f"OTP {otp} sent to {email}")  # Debugging output
@@ -149,9 +163,9 @@ def verify_otp():
     email = data.get('email')
     otp = data.get('otp')
 
-    user = users.get(email)
-    if user and user['otp'] == otp:
-        user['is_verified'] = True  # Mark user as verified
+    user_otp_data = otp_storage.get(email)
+    if user_otp_data and str(user_otp_data['otp']) == str(otp):  # Verify OTP
+        otp_storage[email]['is_verified'] = True  # Mark OTP as verified
         return jsonify({"success": True, "message": "OTP verified! You can now create a password."}), 200
     
     return jsonify({"success": False, "message": "Invalid OTP."}), 401
@@ -162,10 +176,11 @@ def create_account():
     email = data.get('email')
     password = data.get('password')
 
-    user = users.get(email)
-    if user and user['is_verified']:
-        user['password'] = password  # Set the user's password
-        save_user(email, password)  # Save user to CSV
+    user_otp_data = otp_storage.get(email)
+    if user_otp_data and user_otp_data['is_verified']:
+        users[email] = {'password': password}
+        save_user(email, password)
+        otp_storage.pop(email, None)
         return jsonify({"success": True, "message": "Account created successfully! Please login."}), 200
     
     return jsonify({"success": False, "message": "User not verified."}), 401

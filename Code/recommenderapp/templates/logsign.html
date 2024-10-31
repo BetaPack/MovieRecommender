@@ -102,7 +102,7 @@
                 
                 $.ajax({
                     type: "POST",
-                    url: "/login",
+                    url: "/",
                     contentType: "application/json",
                     data: JSON.stringify({ email: email, password: password }),
                     success: function (response) {
@@ -113,11 +113,19 @@
                         }
                     },
                     error: function () {
-                        alert("An error occurred. Please try again.");
+                        console.error("Error:", error);
+                        showAlert(false, "An unexpected error occurred.");
                     }
                 });
             });
         });
+        function showAlert(success, message) {
+            if (success) {
+                swal("Success!", message, "success");
+            } else {
+                swal("Error!", message, "error");
+            }
+        }
     </script>
 </body>
 

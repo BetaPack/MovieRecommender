@@ -71,20 +71,40 @@
         </div>
     </div>
 
-    <!-- Small floating window for displaying reviews -->
-    <div class="review-container">
+    <div class="details-container">
+        <div class="details-item-Plot">
+            <div class="details-label">Plot</div>
+            <div class="details-content"><a href="#">Jonathan Demme</a></div>
+        </div>
+
+        <div class="details-item-Cast">
+            <div class="details-label">Cast</div>
+            <div class="details-content">
+                <a href="#">Thomas Harris</a> &middot; <a href="#">Ted Tally</a>
+            </div>
+        </div>
+
+        <div class="details-item-Crew">
+            <div class="details-label">Crew</div>
+            <div class="details-content">
+            <a href="#">Bahare Riahi</a> &middot;</a>
+            </div>
+        </div>
+
+        <div class="details-item-Awards">
+            <div class="details-label">Awards</div>
+            <div class="details-content">
+            <a href="#">Aditiya Singh</a> &middot;</a>
+            </div>
+        </div>
+
+        <div class="details-item-BoxOffice">
+            <div class="details-label">BoxOffice</div>
+            <div class="details-content">
+            <a href="#">Monish</a> &middot;</a>
+            </div>
+        </div>
         
-        <!-- Overlay for slight transparency -->
-        <!-- Reviews will be dynamically loaded here -->
-                <div id="reviewsContent">
-                    <h3>Mind-bending experience!</h3>
-                    <p>*Inception* is a masterpiece! It's one of those movies that you can watch multiple times and discover something new every time. Definitely a must-watch! 10/10</p>
-                    
-                    <!-- Star rating -->
-                    <div class="stars">
-                        &#9733; &#9733; &#9733; &#9733; &#9733;
-                    </div>
-                </div>
     </div>
     
     </body>
@@ -154,75 +174,106 @@
         }
 
     
-     /* Container styling */
-     .review-container {
-    background-color: rgba(255, 255, 255, 0.7);
-    position: relative;
-    float: right;
-    max-width: 300px;
-    max-height: 220px;
-    margin-top: 20px;
-    margin-right: 175px;
-    padding: 15px;
-    border-radius: 15px;
-    color: #333;
-    text-align: center;
-    font-family: Arial, sans-serif;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    {% comment %} style for info {% endcomment %}
+  
+    .details-container {
+        background-color: #4e4b4b;
+        padding: 20px;
+        width: 90%;
+        max-width: 600px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        margin-top: 45px;
+        float: right;
+        margin-right: 350px;
     }
-    .review-container h5 {
-        font-size: 12px;
-        color: 595757;
+
+    .details-container h3 {
+        font-size: 16px;
+        font-weight: 800;
+        margin-bottom: 5px;
     }
- 
-/* Text styling */
-.review-content {
 
-    position: relative;
-    text-align: center;
-    position: relative;
-    z-index: 2;
-    padding: 15px;
-    font-size: 12px;
-    line-height: 1.5;
-    color: #5a5a5a;
+    .details-container p {
+        font-size: 14px;
+        line-height: 1.5;
+        margin: 8px 0;
+        color: #b3b3b3;
+    }
 
-   
+    .details-container a {
+        color: #5098e7;
+        text-decoration: none;
+        font-weight: bold;
+    }
 
-}
+    .details-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #333;
+        padding: 10px 0;
+    }
+    .details-item-Plot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #333;
+        padding: 10px 0;
+    }
+    .details-item-Cast {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #333;
+        padding: 10px 0;
+    }
+    .details-item-Crew {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #333;
+        padding: 10px 0;
+    }
+    .details-item-Awards{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #333;
+        padding: 10px 0;
+    }
+    .details-item-BoxOffice{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #333;
+        padding: 10px 0;
+    }
 
-h3 {
-    padding-top: 10px;
-    text-align: center;
-    font-size: 22px;
-    font-weight: bold;
-    margin: 0 0 10px;
-    color: #333;
-   
-}
-p{
-    margin: 0 0 10px;
-}
+    .details-item:first-child {
+        border-top: none;
+    }
 
-.overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(255, 255, 255, 0.7);
-    border-radius: 15px;
-    z-index: 1;
-}
-/* Star rating styling */
-.stars {
-    display: inline-block;
-    color: #FFA500; /* Orange color for the stars */
-    font-size: 26px;
-    margin-top: 0px;
-    text-align: center;
-}
+    .details-label {
+        color: #b3b3b3;
+        font-weight: bold;
+    }
 
+    .details-content {
+        color: #e3e3e3;
+    }
+
+    .imdb-link {
+        display: block;
+        margin-top: 15px;
+        font-size: 14px;
+    }
+
+    .imdb-link a {
+        color: #5098e7;
+        font-weight: bold;
+        text-decoration: none;
+    }
 
 
     #searchBox {
@@ -355,44 +406,12 @@ p{
             document.getElementById('predictedMovies').appendChild(card); // Append the card to the container
         }
 
-            // Show review box near the clicked button
-            function showReviewBox(movieTitle, event) {
-                $('#reviewsContent').html('<p>Loading reviews...</p>');
+      
+        
 
-                const reviewBox = $('#reviewBox');
-                const buttonPosition = $(event.target).offset();
-                reviewBox.css({
-                    display: 'block',
-                    top: buttonPosition.top + 30 + 'px',
-                    left: buttonPosition.left + 'px'
-                });
 
-                fetchReviews(movieTitle).then(reviews => {
-                    const reviewsHtml = reviews.length ? reviews.map(review => `<p>${review}</p>`).join('') : '<p>No reviews available.</p>';
-                    $('#reviewsContent').html(reviewsHtml);
-                });
-            }
-
-            // Simulated fetch reviews function
-            function fetchReviews(movieTitle) {
-                return new Promise(resolve => {
-                    setTimeout(() => {
-                        resolve([
-                            "Amazing storyline and characters!",
-                            "Would definitely recommend watching it.",
-                            "Good movie, but some parts were too slow."
-                        ]);
-                    }, 500);
-                });
-            }
-
-            // Close review box on outside click
-            $(document).on('click', function (event) {
-                if (!$(event.target).closest('#reviewBox, .view-reviews-button').length) {
-                    $('#reviewBox').hide();
-                }
-            });
-        });
+        
+        
         $('#feedback').click(function(){
             var myForm = $('fieldset');
             var data = {};

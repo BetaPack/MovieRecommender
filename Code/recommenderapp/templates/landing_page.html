@@ -74,37 +74,28 @@
     <div class="details-container">
         <div class="details-item-Plot">
             <div class="details-label">Plot</div>
-            <div class="details-content"><a href="#">Jonathan Demme</a></div>
+            <div class="details-content" id="plot-content"></div> <!-- Changed to id="plot-content" -->
         </div>
-
+    
         <div class="details-item-Cast">
             <div class="details-label">Cast</div>
-            <div class="details-content">
-                <a href="#">Thomas Harris</a> &middot; <a href="#">Ted Tally</a>
-            </div>
+            <div class="details-content" id="cast-content"></div> <!-- Changed to id="cast-content" -->
         </div>
-
+    
         <div class="details-item-Crew">
             <div class="details-label">Crew</div>
-            <div class="details-content">
-            <a href="#">Bahare Riahi</a> &middot;</a>
-            </div>
+            <div class="details-content" id="crew-content"></div> <!-- Changed to id="crew-content" -->
         </div>
-
+    
         <div class="details-item-Awards">
             <div class="details-label">Awards</div>
-            <div class="details-content">
-            <a href="#">Aditiya Singh</a> &middot;</a>
-            </div>
+            <div class="details-content" id="awards-content"></div> <!-- Changed to id="awards-content" -->
         </div>
-
+    
         <div class="details-item-BoxOffice">
-            <div class="details-label">BoxOffice</div>
-            <div class="details-content">
-            <a href="#">Monish</a> &middot;</a>
-            </div>
+            <div class="details-label">Box Office</div>
+            <div class="details-content" id="boxoffice-content"></div> <!-- Changed to id="boxoffice-content" -->
         </div>
-        
     </div>
     
     </body>
@@ -444,7 +435,29 @@
                 }
             });
         });
+        //Added Movie Information HERE
+        // Example API URL and movie ID
+        const API_URL = "API-Endpoint";
+        const movieID = "MOVIE_ID"; // Replace with the actual movie ID if required by your API
 
+        async function fetchMovieDetails() {
+            try {
+                const response = await fetch(`${API_URL}/movies/${movieID}`);
+                const data = await response.json();
+        
+                // Populate the content for each section
+                document.getElementById('plot-content').innerText = data.plot || "Not available";
+                document.getElementById('cast-content').innerHTML = formatLinks(data.cast);
+                document.getElementById('crew-content').innerHTML = formatLinks(data.crew);
+                document.getElementById('awards-content').innerText = data.awards || "Not available";
+                document.getElementById('boxoffice-content').innerText = data.boxOffice || "Not available";
+        
+            } catch (error) {
+                console.error("Error fetching movie details:", error);
+            }
+        }
+        // Call the function to fetch movie details
+            fetchMovieDetails();
     </script>
 
 </body>

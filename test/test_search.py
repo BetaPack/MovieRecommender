@@ -3,17 +3,21 @@ import warnings
 import sys
 import os
 
-sys.path.append("../")
+# Add the parent directory to the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
 from Code.recommenderapp.search import Search
 
 warnings.filterwarnings("ignore")
 
 
 class Tests(unittest.TestCase):
-    def testSearchToy(self):
+    def setUp(self):
+        self.search = Search()
+
+    def test_search_toy(self):
         search_word = "toy"
-        search = Search()
-        filtered_dict = search.resultsTop10(search_word)
+        filtered_dict = self.search.resultsTop10(search_word)
         expected_resp = [
             "Toy Story (1995)",
             "Toys (1992)",
@@ -24,12 +28,11 @@ class Tests(unittest.TestCase):
             "Babes in Toyland (1961)",
             "Babes in Toyland (1934)",
         ]
-        self.assertTrue(filtered_dict == expected_resp)
+        self.assertEqual(filtered_dict, expected_resp)
 
-    def testSearchLove(self):
+    def test_search_love(self):
         search_word = "love"
-        search = Search()
-        filtered_dict = search.resultsTop10(search_word)
+        filtered_dict = self.search.resultsTop10(search_word)
         expected_resp = [
             "Love & Human Remains (1993)",
             "Love Affair (1994)",
@@ -42,19 +45,17 @@ class Tests(unittest.TestCase):
             "Love and Death on Long Island (1997)",
             "Love Is the Devil (1998)",
         ]
-        self.assertTrue(filtered_dict == expected_resp)
+        self.assertEqual(filtered_dict, expected_resp)
 
-    def testSearchGibberish(self):
+    def test_search_gibberish(self):
         search_word = "gibberish"
-        search = Search()
-        filtered_dict = search.resultsTop10(search_word)
+        filtered_dict = self.search.resultsTop10(search_word)
         expected_resp = []
-        self.assertTrue(filtered_dict == expected_resp)
+        self.assertEqual(filtered_dict, expected_resp)
 
-    def testSearch1995(self):
+    def test_search_1995(self):
         search_word = "1995"
-        search = Search()
-        filtered_dict = search.resultsTop10(search_word)
+        filtered_dict = self.search.resultsTop10(search_word)
         expected_resp = [
             "Toy Story (1995)",
             "Jumanji (1995)",
@@ -67,7 +68,7 @@ class Tests(unittest.TestCase):
             "Sudden Death (1995)",
             "GoldenEye (1995)",
         ]
-        self.assertTrue(filtered_dict == expected_resp)
+        self.assertEqual(filtered_dict, expected_resp)
 
 
 if __name__ == "__main__":

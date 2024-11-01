@@ -12,8 +12,9 @@ BASE_URL = "http://localhost:5000"
 ])
 def test_signup(email, password, expected_status, expected_message):
     # Send OTP first
-    requests.post(f"{BASE_URL}/send_otp", json={"email": email})
-    
+    otp_response = requests.post(f"{BASE_URL}/send_otp", json={"email": email})
+    assert otp_response.status_code == 200  # Ensure OTP is sent successfully
+
     # Attempt signup
     response = requests.post(f"{BASE_URL}/create-account", json={"email": email, "password": password})
     assert response.status_code == expected_status

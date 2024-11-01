@@ -5,3 +5,4 @@ Flask-Mail>=0.10.0
 Flask-Cors>=5.0.0
 autopep8>=1.5.4,<=1.6
 requests>=2.22.0,<=2.25.0
+pytest>=6.0.0  # Add this line for pytest

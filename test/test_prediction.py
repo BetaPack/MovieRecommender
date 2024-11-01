@@ -32,3 +32,15 @@ def test_youtube_trailer_url():
     for rec in recommendations:
         trailer_url = rec.get("Trailer", "#")
         assert trailer_url.startswith("https://www.youtube.com/") or trailer_url == "#"
+
+def test_predict_invalid_movie_name():
+    movie_list = ["Nonexistent Movie (2022)"]
+    response = requests.post(f"{BASE_URL}/predict", json={"movie_list": movie_list})
+    assert response.status_code == 400
+    assert "error" in response.json()  # Assuming the API returns an error message
+
+def test_predict_empty_request():
+    response = requests.post(f"{BASE_URL}/predict", json={})
+    assert response.status_code == 400
+    assert "error" in response.json()  # Assuming the API returns an error message
+

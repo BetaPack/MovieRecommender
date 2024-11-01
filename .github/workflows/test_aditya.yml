@@ -1,4 +1,4 @@
-name: Movie Recommender Feature Tests
+name: Aditya's Test Workflow
 
 on:
   push:
@@ -12,26 +12,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_DB: test_db
-          POSTGRES_USER: test_user
-          POSTGRES_PASSWORD: test_pass
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -U test_user -d test_db"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3  # Updated to v3
+        uses: actions/checkout@v2
 
       - name: Set up Python
-        uses: actions/setup-python@v3  # Updated to v3
+        uses: actions/setup-python@v2
         with:
           python-version: '3.8'
 
@@ -39,24 +25,17 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Run Signup Tests
-        env:
-          DATABASE_URL: postgres://test_user:test_pass@localhost:5432/test_db
+
+      - name: Set PYTHONPATH
         run: |
-          python -m pytest test/test_signup.py --disable-warnings --junitxml=test/results/test_signup_results.xml
-      - name: Run Login Tests
-        env:
-          DATABASE_URL: postgres://test_user:test_pass@localhost:5432/test_db
+          echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV  # Assuming the root folder contains Code
+
+      # Start server or setup environment if needed
+      - name: Start Application Server (Optional)
         run: |
-          python -m pytest test/test_login.py --disable-warnings --junitxml=test/results/test_login_results.xml
-      - name: Run Prediction Tests
-        env:
-          DATABASE_URL: postgres://test_user:test_pass@localhost:5432/test_db
+          # Uncomment and modify the following lines if a server is needed
+          # nohup python path/to/your_server.py &
+
+      - name: Run Tests
         run: |
-          python -m pytest test/test_prediction.py --disable-warnings --junitxml=test/results/test_prediction_results.xml
-      - name: Upload Test Results
-        if: always()
-        uses: actions/upload-artifact@v3  # Updated to v3
-        with:
-          name: test-results
-          path: test/results
+          python -m pytest test/test_search.py --disable-warnings

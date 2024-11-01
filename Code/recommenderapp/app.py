@@ -57,17 +57,17 @@ def load_users():
 
 users = load_users()
 
-# Save user credentials to CSV
 def save_user(email, password):
-    # Check if the email already exists
     if email in users:
         print(f"User with email {email} already exists. Account creation failed.")
-        return
+        return False  # Indicate failure
 
-    # Append new user data to CSV file
     with open(USER_CSV, mode='a', newline='') as f:
-        writer = pd.DataFrame([[email, password]], columns=["email", "password"])
-        writer.to_csv(f, header=f.tell() == 0, index=False)  # Only write header if file is empty
+        f.write(f"\n{email},{password}")  # Ensure each entry starts on a new line
+
+    print(f"User with email {email} created successfully!")
+    return True  # Indicate success
+
 
 
 # Load users initially
@@ -77,35 +77,36 @@ def save_user(email, password):
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "GET":
-        return render_template("signup.html")  # Renders a page with email, password, and OTP fields
-    
+        return render_template("signup.html")
+
     data = json.loads(request.data)
     email = data.get('email')
     password = data.get('password')
     otp = data.get('otp')
     
-    # Step 1: Generate OTP if email and password are provided but no OTP yet
+    # Generate OTP
     if email and password and not otp:
         if email in users:
             return jsonify({"success": False, "message": "Email already exists."}), 400
         generated_otp = random.randint(100000, 999999)
         otp_storage[email] = {"otp": generated_otp, "password": password}
-        
+
         # Send OTP email
         msg = Message("Your OTP Code", sender=app.config['MAIL_USERNAME'], recipients=[email])
         msg.body = f"Your OTP code is {generated_otp}. Please enter this code to verify your email."
         mail.send(msg)
         return jsonify({"success": True, "message": "OTP sent to your email!"}), 200
     
-    # Step 2: Verify OTP and create account if OTP is provided
+    # Verify OTP and create account
     elif email and otp:
         user_otp_data = otp_storage.get(email)
         if user_otp_data and str(user_otp_data["otp"]) == str(otp):
             # Create user account
-            users[email] = {"password": user_otp_data["password"]}
-            save_user(email, user_otp_data["password"])
-            otp_storage.pop(email, None)
-            return jsonify({"success": True, "message": "Account created successfully! Please login."}), 200
+            if save_user(email, user_otp_data["password"]):
+                otp_storage.pop(email, None)  # Clear stored OTP
+                return jsonify({"success": True, "message": "Account created successfully! Please login."}), 200
+            else:
+                return jsonify({"success": False, "message": "Failed to create account."}), 500
         else:
             return jsonify({"success": False, "message": "Invalid OTP."}), 401
 
@@ -169,7 +170,12 @@ def landing_page():
     return redirect(url_for('logsign_page'))
 
 @app.route("/", methods=["POST"])
+@app.route("/", methods=["POST"])
 def login():
+    # Load users again to ensure we're checking the latest data
+    global users
+    users = load_users()
+
     data = json.loads(request.data)
     email = data.get('email')
     password = data.get('password')
@@ -179,7 +185,12 @@ def login():
     if user_password and user_password == password:
         session['user'] = email  # Set user session
         return jsonify({"success": True, "message": "Login successful!"}), 200
-    return jsonify({"success": False, "message": "Invalid credentials."}), 401
+    else:
+        # Detailed error message for failed login
+        if email not in users:
+            return jsonify({"success": False, "message": "Email not found. Please check your email and try again."}), 401
+        else:
+            return jsonify({"success": False, "message": "Incorrect password. Please try again."}), 401
 
 
 
@@ -255,6 +266,9 @@ def predict():
 
     resp = {"recommendations": recommendations, "rating": movie_with_rating}
     return resp
+
+# Initialize Search instance globally
+search_instance = Search()
 
 @app.route("/search", methods=["POST"])
 def search():

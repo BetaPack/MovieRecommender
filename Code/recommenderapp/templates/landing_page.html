@@ -62,7 +62,7 @@
                 <div class="scrollable-card-container">
                     <div id="predictedMovies" class="card-container"></div>
                 </div>
-                <input type="button" class="btn btn-danger" name="feedback" id="feedback" value="Give Feedback">
+                <input type="button" class="btn btn-danger" name="suggest" id="suggest" value="Suggest">
             </div>
         </div>
     </div>
@@ -353,41 +353,66 @@
             });
         });
 
-        $('#feedback').click(function(){
-            var myForm = $('fieldset');
-            var data = {};
-            var labels = {
+        $('#suggest').click(function() {
+            const data = {};
+            const labels = {
                 1: 'Dislike',
                 2: 'Yet to watch',
                 3: 'Like'
             };
-            for(var i=0;i<myForm.length;i++){
-                var input = $('#'+i).find('div').find('input:checked')[0].value;
-                var movieName = $('#'+i).find('div').find('li')[0].innerText;
-                data[movieName]=labels[input];
-            }
-            console.log(data);
 
-            $.ajax({
-                type: "POST",
-                url: "/feedback",
-                dataType: "json",
-                contentType: "application/json;charset=UTF-8",
-                traditional: "true",
-                cache: false,
-                data: JSON.stringify(data),
-                success: function (response) {
-                    // console.log("->", response);
-                    // $("#dataCollected").css("display", "block");
-                    window.location.href="/success";
-                },
-                error: function (error) {
-                    console.log("ERROR ->" + error );
-                    displayErrorMessage("Please fill in all the fields");
+            // Loop through each card to capture user feedback
+            $('#predictedMovies .card').each(function(index) {
+                const movieTitle = $(this).find('.card-title').text();
+                const feedbackValue = $(this).find('input[type="radio"]:checked').val();
+
+                if (feedbackValue) {
+                    data[movieTitle] = labels[feedbackValue];
                 }
             });
 
+            console.log("Collected feedback data:", data);
+
+            // Send feedback data to the backend for new suggestions
+            $.ajax({
+                type: "POST",
+                url: "/get_suggestions",
+                dataType: "json",
+                contentType: "application/json;charset=UTF-8",
+                traditional: true,
+                data: JSON.stringify(data),
+                success: function(response) {
+                    displayMovies(response.recommendations); // Display new recommendations
+                },
+                error: function(error) {
+                    console.error("ERROR:", error);
+                    displayErrorMessage("Error fetching new recommendations");
+                }
+            });
         });
+
+        // Function to display movies in the predictedMovies container
+        function displayMovies(recommendations) {
+            const container = $('#predictedMovies');
+            container.empty(); // Clear previous recommendations
+
+            recommendations.forEach(movie => {
+                const card = $('<div/>', { class: 'card', style: 'margin: 2.5%; width: 45%; padding: 5%' });
+                const image = $('<img/>', { src: movie.poster, alt: 'Movie Poster', style: 'width: 100%' });
+                const title = $('<h3/>', { class: 'card-title', text: movie.title });
+                const imdbRating = $('<h5/>', { class: 'card-text', text: 'IMDb: ' + movie.imdbRating });
+                const genre = $('<h5/>', { class: 'card-text', text: 'Genre: ' + movie.genre });
+
+                const radioButtons = $('<div/>', { class: 'radio-buttons' }).append(
+                    $('<label class="radio-inline">').html('<input type="radio" name="feedback-' + movie.title + '" value="1"> Dislike'),
+                    $('<label class="radio-inline">').html('<input type="radio" name="feedback-' + movie.title + '" value="2"> Yet to watch'),
+                    $('<label class="radio-inline">').html('<input type="radio" name="feedback-' + movie.title + '" value="3"> Like')
+                );
+
+                card.append(image, title, imdbRating, genre, radioButtons);
+                container.append(card);
+            });
+        }
 
 
     });

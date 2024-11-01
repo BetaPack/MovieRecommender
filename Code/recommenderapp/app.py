@@ -4,8 +4,11 @@ import json
 import sys
 import csv
 import time
+import os
+import pandas as pd
 
 sys.path.append("../../")
+from Code.user_based_suggestions.user_based_suggestions  import suggest_movies
 from Code.prediction_scripts.item_based import recommendForNewUser
 from search import Search
 
@@ -97,6 +100,18 @@ def feedback():
 @app.route("/success")
 def success():
     return render_template("success.html")
+
+@app.route('/get_suggestions', methods=['POST'])
+def get_suggestions():
+    feedback_data = request.json  # Feedback data collected from frontend
+    print("Feedback data received:", feedback_data)
+    current_path = os.getcwd()
+    data_path = os.path.abspath(os.path.join(current_path, "../.."))
+    data_path = os.path.join(os.path.join(data_path, "data"), "movies.csv")
+    dataset = pd.read_csv(data_path)
+    recommendations = suggest_movies(feedback_data, dataset)
+    print("Recommendations:", recommendations)
+    return jsonify({"recommendations": recommendations})
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)

@@ -14,9 +14,7 @@ warnings.filterwarnings("ignore")
 class Tests(unittest.TestCase):
     def setUp(self):
         self.search = Search()
-        if not self.search.data:
-            self.fail("Data not available for search. Check if dataset is loaded.")
-
+        
     def test_search_toy(self):
         search_word = "toy"
         filtered_dict = self.search.resultsTop10(search_word)

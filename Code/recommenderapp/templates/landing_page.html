@@ -164,9 +164,7 @@
             margin-left: 100px;
         }
 
-    
-    {% comment %} style for info {% endcomment %}
-  
+      
     .details-container {
         background-color: #4e4b4b;
         padding: 20px;
@@ -284,15 +282,19 @@
            
     </style>
 
-    <script>
-        $(document).ready(function () {
-            function displayErrorMessage(message) {
-                $('#errorMessageText').text(message);
-                $('#errorMessage').show(); // Show the error card
-                $('#main').css('opacity', '0.1');
-            }
-            $(function () {
-            // Autocomplete for movie search
+<script>
+    $(document).ready(function () {
+        function displayErrorMessage(message) {
+            $('#errorMessageText').text(message);
+            $('#errorMessage').show();
+            $('#main').css('opacity', '0.1');
+            $('#errorMessage').click(function () {
+                $('#errorMessage').hide();
+                $('#main').css('opacity', '1');
+            });
+        }
+
+        $(function () {
             $("#searchBox").autocomplete({
                 source: function (request, response) {
                     $.ajax({
@@ -300,9 +302,7 @@
                         url: "http://localhost:5000/search",
                         dataType: "json",
                         cache: false,
-                        data: { 
-                            q: request.term 
-                        },
+                        data: { q: request.term },
                         success: function (data) { response(data); },
                         error: function (jqXHR, textStatus, errorThrown) {
                             console.log(textStatus + " " + errorThrown);
@@ -310,7 +310,7 @@
                     });
                 },
                 select: function (event, ui) {
-                    var ulList = $('#selectedMovies');
+                    var ulList = $('#selectedMovies ul');
                     var li = $('<li/>').text(ui.item.value).appendTo(ulList);
                     $('#searchBox').val("");
                     return false;
@@ -319,14 +319,13 @@
             });
         });
 
-        $("#predict").click( function(){
-            var movie_list = []
-
-            $('#selectedMovies li').each( function () {
+        $("#predict").click(function () {
+            var movie_list = [];
+            $('#selectedMovies li').each(function () {
                 movie_list.push($(this).text());
             });
 
-            var movies = {"movie_list": movie_list};
+            var movies = { "movie_list": movie_list };
 
             $.ajax({
                 type: "POST",
@@ -337,20 +336,19 @@
                 cache: false,
                 data: JSON.stringify(movies),
                 success: function (response) {
-                    $('#predictedMovies').empty(); // Clear previous predictions to Prevents Duplicate Entries and Ensures Fresh Results
-                    response['recommendations'].forEach(function(element) {
+                    $('#predictedMovies').empty();
+                    response['recommendations'].forEach(function (element) {
                         var movieDetails = response['rating'][element];
                         createMovieCard(element, movieDetails.poster, movieDetails.imdbRating, movieDetails.genre);
                     });
                 },
                 error: function (error) {
-                    console.log("ERROR ->" + error );
+                    console.log("ERROR ->" + error);
                     displayErrorMessage("Error in fetching recommendations");
                 }
             });
         });
 
-        // Function to create movie cards with "View Reviews" button
         function createMovieCard(movieTitle, imageSrc, imdbRating, genre) {
             var card = document.createElement('div');
             card.className = 'card';
@@ -379,86 +377,43 @@
             genreElement.className = 'card-text';
             genreElement.textContent = 'Genre: ' + genre;
 
-            // Create "View Reviews" button
             var viewReviewsButton = document.createElement('button');
             viewReviewsButton.className = 'btn btn-primary view-reviews-button';
             viewReviewsButton.textContent = 'View Reviews';
-            viewReviewsButton.onclick = function(event) {
-                showReviewBox(movieTitle, event); // Show review box with movie title
+            viewReviewsButton.onclick = function (event) {
+                showReviewBox(movieTitle, event);
             };
 
-            // Append elements to card body and card
             cardBody.appendChild(title);
             cardBody.appendChild(imdbRatingElement);
             cardBody.appendChild(genreElement);
             cardBody.appendChild(viewReviewsButton);
             card.appendChild(cardBody);
 
-            document.getElementById('predictedMovies').appendChild(card); // Append the card to the container
+            document.getElementById('predictedMovies').appendChild(card);
         }
 
-      
-        
-
-
-        
-        
-        $('#feedback').click(function(){
-            var myForm = $('fieldset');
-            var data = {};
-            var labels = {
-                1: 'Dislike',
-                2: 'Yet to watch',
-                3: 'Like'
-            };
-            for(var i=0;i<myForm.length;i++){
-                var input = $('#'+i).find('div').find('input:checked')[0].value;
-                var movieName = $('#'+i).find('div').find('li')[0].innerText;
-                data[movieName]=labels[input];
-            }
-            console.log(data);
-
-            $.ajax({
-                type: "POST",
-                url: "/feedback",
-                dataType: "json",
-                contentType: "application/json;charset=UTF-8",
-                traditional: "true",
-                cache: false,
-                data: JSON.stringify(data),
-                success: function (response) {
-                    window.location.href="/success";
-                },
-                error: function (error) {
-                    console.log("ERROR ->" + error );
-                    displayErrorMessage("Please fill in all the fields");
-                }
-            });
-        });
-        //Added Movie Information HERE
-        // Example API URL and movie ID
         const API_URL = "API-Endpoint";
-        const movieID = "MOVIE_ID"; // Replace with the actual movie ID if required by your API
+        const movieID = "MOVIE_ID";
 
         async function fetchMovieDetails() {
             try {
                 const response = await fetch(`${API_URL}/movies/${movieID}`);
                 const data = await response.json();
-        
-                // Populate the content for each section
+
                 document.getElementById('plot-content').innerText = data.plot || "Not available";
                 document.getElementById('cast-content').innerHTML = formatLinks(data.cast);
                 document.getElementById('crew-content').innerHTML = formatLinks(data.crew);
                 document.getElementById('awards-content').innerText = data.awards || "Not available";
                 document.getElementById('boxoffice-content').innerText = data.boxOffice || "Not available";
-        
             } catch (error) {
                 console.error("Error fetching movie details:", error);
             }
         }
-        // Call the function to fetch movie details
-            fetchMovieDetails();
-    </script>
+
+        fetchMovieDetails();
+    });
+</script>
 
 </body>
 </html>

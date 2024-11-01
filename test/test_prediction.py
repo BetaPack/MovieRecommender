@@ -4,6 +4,9 @@ import requests
 BASE_URL = "http://localhost:5000"
 
 @pytest.mark.parametrize("movie_list, expected_status", [
+    (["Day of the Doctor, The (2013)"], 200),
+    (["Wolf of Wall Street, The (2013)", "Wolf of Wall Street, The (2013)"], 200),
+    (["Wolf of Wall Street, The (2013)", "Matrix, The (1999)"], 200),
     (["Inception (2010)", "Matrix, The (1999)", "Interstellar (2014)"], 200),
     ([], 400),
 ])

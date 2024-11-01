@@ -1,27 +1,30 @@
-# name: test
+name: test
 
-# on: [push]
+on:
+  push:
+    branches:
+      - feature  # Specify your branch here or use '*' for all branches
 
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-#     strategy:
-#       matrix:
-#         python-version: ["3.8"]
-#     steps:
-#     - uses: actions/checkout@v3
-#     - name: Set up Python ${{ matrix.python-version }}
-#       uses: actions/setup-python@v3
-#       with:
-#         python-version: ${{ matrix.python-version }}
-#     - name: Install dependencies
-#       run: |
-#         python -m pip install --upgrade pip
-#         pip install pandas
-#         pip install pylint
-#         pip install -U Flask
-#         pip install -U flask-cors
-#     - name: Running test cases for searching
-#       run: python test/test_search.py
-#     - name: Running test cases for util
-#       run: python test/tests.py
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8"]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas
+          pip install pylint
+          pip install -U Flask
+          pip install -U flask-cors
+      - name: Running test cases for searching
+        run: python test/test_search.py
+      - name: Running test cases for util
+        run: python test/tests.py

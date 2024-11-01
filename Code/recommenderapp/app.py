@@ -30,26 +30,32 @@ OMDB_API_KEY = 'b726fa05'
 YOUTUBE_API_KEY = 'AIzaSyB4FoU4IKFhxAjLu4pgucS0W1HJtVzSyuk'
 
 # Path for storing user credentials
-USER_CSV = "users.csv"
+USER_CSV = 'users.csv'
 
 # Function to load users from CSV
 def load_users():
-    if not os.path.exists(USER_CSV) or pd.read_csv(USER_CSV).empty:
+    if not os.path.exists(USER_CSV):
         df = pd.DataFrame(columns=["email", "password"])
         df.to_csv(USER_CSV, index=False)
         return {}
-    try:
-        # Load users and check for unique emails
-        df = pd.read_csv(USER_CSV)
-        if df['email'].duplicated().any():
-            print("Warning: Duplicate emails found in users.csv. Removing duplicates.")
-            df = df[~df['email'].duplicated(keep='first')]  # Keep only the first occurrence
-            df.to_csv(USER_CSV, index=False)
-        return df.set_index("email").to_dict(orient="index")
-    except KeyError:
-        df = pd.DataFrame(columns=["email", "password"])
+
+    df = pd.read_csv(USER_CSV)
+    df.columns = df.columns.str.strip()  # Strip whitespace from column headers
+    
+    print(df.head())  # Debugging line
+    
+    if 'email' not in df.columns or 'password' not in df.columns:
+        raise ValueError("CSV file does not contain required columns 'email' and 'password'.")
+
+    if df['email'].duplicated().any():
+        print("Warning: Duplicate emails found in users.csv. Removing duplicates.")
+        df = df[~df['email'].duplicated(keep='first')]
         df.to_csv(USER_CSV, index=False)
-        return {}
+
+    return df.set_index("email")["password"].to_dict()
+
+
+users = load_users()
 
 # Save user credentials to CSV
 def save_user(email, password):
@@ -59,11 +65,51 @@ def save_user(email, password):
         return
 
     # Append new user data to CSV file
-    df = pd.DataFrame([[email, password]], columns=["email", "password"])
-    df.to_csv(USER_CSV, mode='a', index=False, header=not os.path.exists(USER_CSV))
+    with open(USER_CSV, mode='a', newline='') as f:
+        writer = pd.DataFrame([[email, password]], columns=["email", "password"])
+        writer.to_csv(f, header=f.tell() == 0, index=False)  # Only write header if file is empty
+
 
 # Load users initially
-users = load_users()
+# otp_storage = {}
+
+# Consolidated Signup Route
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+    if request.method == "GET":
+        return render_template("signup.html")  # Renders a page with email, password, and OTP fields
+    
+    data = json.loads(request.data)
+    email = data.get('email')
+    password = data.get('password')
+    otp = data.get('otp')
+    
+    # Step 1: Generate OTP if email and password are provided but no OTP yet
+    if email and password and not otp:
+        if email in users:
+            return jsonify({"success": False, "message": "Email already exists."}), 400
+        generated_otp = random.randint(100000, 999999)
+        otp_storage[email] = {"otp": generated_otp, "password": password}
+        
+        # Send OTP email
+        msg = Message("Your OTP Code", sender=app.config['MAIL_USERNAME'], recipients=[email])
+        msg.body = f"Your OTP code is {generated_otp}. Please enter this code to verify your email."
+        mail.send(msg)
+        return jsonify({"success": True, "message": "OTP sent to your email!"}), 200
+    
+    # Step 2: Verify OTP and create account if OTP is provided
+    elif email and otp:
+        user_otp_data = otp_storage.get(email)
+        if user_otp_data and str(user_otp_data["otp"]) == str(otp):
+            # Create user account
+            users[email] = {"password": user_otp_data["password"]}
+            save_user(email, user_otp_data["password"])
+            otp_storage.pop(email, None)
+            return jsonify({"success": True, "message": "Account created successfully! Please login."}), 200
+        else:
+            return jsonify({"success": False, "message": "Invalid OTP."}), 401
+
+    return jsonify({"success": False, "message": "Incomplete data provided."}), 400
 
 # Function to retrieve movie information with YouTube trailer
 def get_movie_info(title):
@@ -128,11 +174,13 @@ def login():
     email = data.get('email')
     password = data.get('password')
     
-    user = users.get(email)
-    if user and user['password'] == password:
+    # Use users.get to retrieve the password
+    user_password = users.get(email)
+    if user_password and user_password == password:
         session['user'] = email  # Set user session
         return jsonify({"success": True, "message": "Login successful!"}), 200
     return jsonify({"success": False, "message": "Invalid credentials."}), 401
+
 
 
 # Temporary dictionary to store OTPs and their verification status during the session
@@ -157,33 +205,33 @@ def send_otp():
         print(f"Failed to send email: {e}")  # Detailed error message for debugging
         return jsonify({"success": False, "message": "Failed to send OTP. Please try again."}), 500
 
-@app.route("/verify-otp", methods=["POST"])
-def verify_otp():
-    data = json.loads(request.data)
-    email = data.get('email')
-    otp = data.get('otp')
+# @app.route("/verify-otp", methods=["POST"])
+# def verify_otp():
+#     data = json.loads(request.data)
+#     email = data.get('email')
+#     otp = data.get('otp')
 
-    user_otp_data = otp_storage.get(email)
-    if user_otp_data and str(user_otp_data['otp']) == str(otp):  # Verify OTP
-        otp_storage[email]['is_verified'] = True  # Mark OTP as verified
-        return jsonify({"success": True, "message": "OTP verified! You can now create a password."}), 200
+#     user_otp_data = otp_storage.get(email)
+#     if user_otp_data and str(user_otp_data['otp']) == str(otp):  # Verify OTP
+#         otp_storage[email]['is_verified'] = True  # Mark OTP as verified
+#         return jsonify({"success": True, "message": "OTP verified! You can now create a password."}), 200
     
-    return jsonify({"success": False, "message": "Invalid OTP."}), 401
+#     return jsonify({"success": False, "message": "Invalid OTP."}), 401
 
-@app.route("/create-account", methods=["POST"])
-def create_account():
-    data = json.loads(request.data)
-    email = data.get('email')
-    password = data.get('password')
+# @app.route("/create-account", methods=["POST"])
+# def create_account():
+#     data = json.loads(request.data)
+#     email = data.get('email')
+#     password = data.get('password')
 
-    user_otp_data = otp_storage.get(email)
-    if user_otp_data and user_otp_data['is_verified']:
-        users[email] = {'password': password}
-        save_user(email, password)
-        otp_storage.pop(email, None)
-        return jsonify({"success": True, "message": "Account created successfully! Please login."}), 200
+#     user_otp_data = otp_storage.get(email)
+#     if user_otp_data and user_otp_data['is_verified']:
+#         users[email] = {'password': password}
+#         save_user(email, password)
+#         otp_storage.pop(email, None)
+#         return jsonify({"success": True, "message": "Account created successfully! Please login."}), 200
     
-    return jsonify({"success": False, "message": "User not verified."}), 401
+#     return jsonify({"success": False, "message": "User not verified."}), 401
 
 @app.route("/predict", methods=["POST"])
 def predict():

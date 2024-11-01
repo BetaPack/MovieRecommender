@@ -28,12 +28,16 @@
         <div class="container">
             <h2 style="color:#ebe5e6; font-size: 24px; font-weight: bold;">Sign Up</h2>
 
-            <!-- Step 1: Enter Email and Send OTP -->
-            <div id="emailStep">
-                <form id="emailForm">
+            <!-- Combined Email and Password Step -->
+            <div id="signupStep">
+                <form id="signupForm">
                     <div class="form-group">
                         <label for="signupEmail" style="color:#ebe5e6; font-weight: bold;">Email:</label>
                         <input type="email" class="form-control" id="signupEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword" style="color:#ebe5e6; font-weight: bold;">Password:</label>
+                        <input type="password" class="form-control" id="signupPassword" required>
                     </div>
                     <button type="submit" class="btn btn-danger">Send OTP</button>
                 </form>
@@ -47,17 +51,6 @@
                         <input type="text" class="form-control" id="otp" required>
                     </div>
                     <button type="submit" class="btn btn-danger">Verify OTP</button>
-                </form>
-            </div>
-
-            <!-- Step 3: Create Password -->
-            <div id="passwordStep" style="display: none;">
-                <form id="passwordForm">
-                    <div class="form-group">
-                        <label for="signupPassword" style="color:#ebe5e6; font-weight: bold;">Create Password:</label>
-                        <input type="password" class="form-control" id="signupPassword" required>
-                    </div>
-                    <button type="submit" class="btn btn-danger">Create Account</button>
                 </form>
             </div>
             <p style="color:#ebe5e6;">Already have an account? <a href="/" style="color:#d9534f;">Login</a></p>
@@ -117,23 +110,22 @@
 
     <script>
         $(document).ready(function () {
-            // Step 1: Send OTP
-            $('#emailForm').submit(function (event) {
+            // Step 1: Send OTP with email and password
+            $('#signupForm').submit(function (event) {
                 event.preventDefault();
                 var email = $('#signupEmail').val();
+                var password = $('#signupPassword').val();
 
                 $.ajax({
                     type: "POST",
-                    url: "/send-otp",
+                    url: "/signup",
                     contentType: "application/json",
-                    data: JSON.stringify({ email: email }),
+                    data: JSON.stringify({ email: email, password: password }),
                     success: function (response) {
+                        alert(response.message);
                         if (response.success) {
-                            alert(response.message);
-                            $('#emailStep').hide();
+                            $('#signupStep').hide();
                             $('#otpStep').show();
-                        } else {
-                            alert("Failed to send OTP. Please try again.");
                         }
                     },
                     error: function () {
@@ -150,16 +142,13 @@
 
                 $.ajax({
                     type: "POST",
-                    url: "/verify-otp",
+                    url: "/signup",
                     contentType: "application/json",
                     data: JSON.stringify({ email: email, otp: otp }),
                     success: function (response) {
+                        alert(response.message);
                         if (response.success) {
-                            alert(response.message);
-                            $('#otpStep').hide();
-                            $('#passwordStep').show();
-                        } else {
-                            alert("Invalid OTP. Please try again.");
+                            window.location.href = "/";  // Redirect to login page
                         }
                     },
                     error: function () {
@@ -167,39 +156,7 @@
                     }
                 });
             });
-
-            // Step 3: Create Account
-            $('#passwordForm').submit(function (event) {
-                event.preventDefault();
-                var email = $('#signupEmail').val();
-                var password = $('#signupPassword').val();
-
-                $.ajax({
-                    type: "POST",
-                    url: "/create-account",
-                    contentType: "application/json",
-                    data: JSON.stringify({ email: email, password: password }),
-                    success: function (response) {
-                        if (response.success) {
-                            alert(response.message);
-                            window.location.href = "/login";  // Redirect to login page
-                        } else {
-                            alert("User not verified or an error occurred.");
-                        }
-                    },
-                    error: function () {
-                        alert("An error occurred while creating the account.");
-                    }
-                });
-            });
         });
-        function showAlert(success, message) {
-            if (success) {
-                swal("Success!", message, "success");
-            } else {
-                swal("Error!", message, "error");
-            }
-        }
     </script>
 </body>
 

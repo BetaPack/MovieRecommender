@@ -280,20 +280,6 @@
                     var ulList = $('#predictedMovies');
                     var i = 0;
                     response['recommendations'].forEach(element => {
-                        // var diventry = $('<div/>');
-                        // var fieldset = $('<fieldset/>', {id:i}).css("border",'0');
-                        // var poster = $('<img>').attr('src', imageSrc);                        var li = $('<li/>').text(element);
-                        // var imdbRating = $('<li>').text("imdb: " + response['rating'][element+"-r"]);
-                        // var genre=$('<p/>').text("Genre: " + response['rating'][element+"-g"]);
-                        // var radios = $("<label class='radio-inline'><input type='radio' name="+i+" value=1>Dislike</label> \
-                        // <label class='radio-inline'><input type='radio' name="+i+" value=2>Yet to watch</label> \
-                        // <label class='radio-inline'><input type='radio' name="+i+" value=3>Like</label><br/><br/>");
-                        // diventry.append(li);
-                        // diventry.append(imdbRating);
-                        // diventry.append(genre);
-                        // diventry.append(radios);
-                        // fieldset.append(diventry);
-                        // ulList.append(fieldset);
                         var card = document.createElement('div');
                         card.className = 'card';
                         card.style.margin='2.5%'
@@ -469,8 +455,38 @@
                     $('<label class="radio-inline">').html('<input type="radio" name="feedback-' + movie.title + '" value="3"> Like')
                 );
 
-                card.append(image, title, imdbRating, genre, radioButtons);
+                var infoBox = $('<div/>', { class: 'info-box', html: `
+                    <p><strong>Plot:</strong> NA</p>
+                    <p><strong>Cast:</strong> NA</p>
+                    <p><strong>Box Office:</strong> NA</p>
+                ` });
+
+                infoBox.css({
+                    display: 'none', // Start hidden
+                    position: 'absolute',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    color: 'white',
+                    padding: '10px',
+                    borderRadius: '5px',
+                    zIndex: 1000,
+                    top: '100%', // Position below the card
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: '100%'
+                });
+
+                card.append(image, title, imdbRating, genre, radioButtons, infoBox);
                 container.append(card);
+
+                // Show tooltip on hover
+                $(card).hover(
+                    function() {
+                        infoBox.fadeIn(200); // Show the info box
+                    },
+                    function() {
+                        infoBox.fadeOut(200); // Hide the info box
+                    }
+                );
             });
         }
 

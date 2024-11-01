@@ -15,96 +15,66 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 
+
 <body>
-    <!-- Error message -->
-    <a href="/">
-        <div id="errorMessage" class="error-card">
-            <div class="error-content">
-                <h3>Error!</h3>
-                <p id="errorMessageText"></p>
-            </div>
+    <!-- <div class="container"> -->
+        <a href="/">
+    <div id="errorMessage" class="error-card">
+        <div class="error-content">
+            <h3>Error!</h3>
+            <p id="errorMessageText"></p>
         </div>
-    </a>
-
-    <!-- Main content -->
+    </div>
+</a>
+<!-- </div> -->
     <div id="main">
-        <nav class="navbar navbar-inverse" style="background-color: rgba(0, 0, 0, 0.5);">
-            <div class="container justify-content-center">
-                <div class="navbar-header text-center" style="text-align:center;">
-                    <h1 style="color:#d9534f; font-size: 30px !important; font-weight: 800; margin-left:400px;" class="navbar-brand">MOVIE RECOMMENDATIONS</h1>
-                </div>
-            </div>
-        </nav>
-
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <h2 style="color:#ebe5e6; font-size: 24px; font-weight: bold;">Please select movies for training</h2>
-                    <p>
-                        <label style="color:#ebe5e6; font-weight: bold;">Search Here</label>&nbsp;&nbsp;<input type="text" name="search" id="searchBox" />
-                    </p>
-                    <h2 style="color:#ebe5e6; font-size: 24px; font-weight: bold;">Selected movies:</h2>
-                    <div class="card-container" id="selectedMovies">
-                        {% for movie in training_data %}
-                        <div class="card">
-                            <h4>{{ movie.title }}</h4>
-                            <p>Rating: {{ movie.rating }}</p>
-                            <p>IMDb Rating: {{ movie.imdbRating }}</p>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    <input type="button" class="btn btn-danger" name="predict" id="predict" value="Predict">
-                </div>
-                <div class="col-md-6">
-                    <h2 style="color:#ebe5e6; font-size: 24px; font-weight: bold;">Predicted Movies</h2>
-                    <div class="scrollable-card-container">
-                        <div id="predictedMovies" class="card-container"></div>
-                    </div>
-                    <input type="button" class="btn btn-danger" name="feedback" id="feedback" value="Give Feedback">
-                </div>
+    <nav class="navbar navbar-inverse" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="container justify-content-center">
+            <div class="navbar-header text-center" style="text-align:center;">
+                <h1 style="color:#d9534f; font-size: 30px !important; font-weight: 800; margin-left:400px;" class="navbar-brand" href="#">MOVIE RECOMMENDATIONS</h1>
             </div>
         </div>
+    </nav>
 
-        <div id="dataCollected" class="container" style="display: none;">
-            <h1 style="color:#ebe5e6; font-size: 24px; font-weight: bold;">Thanks!! Your response was stored.</h1>
-            <input type="button" id="refreshPage" class="btn btn-danger" name="refreshPage" value="Take another attempt">
+    <div class="container">
+        
+        <div class="row">
+            <div class="col-md-6">
+                <h2 style="color:#ebe5e6; font-size: 24px; font-weight: bold;">Please select movies for training</h2>
+                <p>
+                    <label style="color:#ebe5e6; font-weight: bold;">Search Here</label>&nbsp;&nbsp;<input type="text" name="search" id="searchBox" />
+                </p>
+                <h2 style="color:#ebe5e6; font-size: 24px; font-weight: bold;">Selected movies:</h2>
+                <div class="card-container" id="selectedMovies">
+                    {% for movie in training_data %}
+                    <div class="card">
+                        <h4>{{ movie.title }}</h4>
+                        <p>Rating: {{ movie.rating }}</p>
+                        <p>IMDb Rating: {{ movie.imdbRating }}</p>
+                        <!-- Add more IMDb info fields as needed -->
+                    </div>
+                    {% endfor %}
+                </div>
+                <input type="button" class="btn btn-danger" name="predict" id="predict" value="Predict">
+            </div>
+            <div class="col-md-6">
+                <h2 style="color:#ebe5e6; font-size: 24px; font-weight: bold;">Predicted Movies</h2>
+                <div class="scrollable-card-container">
+                    <div id="predictedMovies" class="card-container"></div>
+                </div>
+                <input type="button" class="btn btn-danger" name="feedback" id="feedback" value="Give Feedback">
+            </div>
         </div>
     </div>
 
-    <div class="details-container">
-        <div class="details-item-Plot">
-            <div class="details-label">Plot</div>
-            <div class="details-content" id="plot-content"></div> <!-- Changed to id="plot-content" -->
-        </div>
-    
-        <div class="details-item-Cast">
-            <div class="details-label">Cast</div>
-            <div class="details-content" id="cast-content"></div> <!-- Changed to id="cast-content" -->
-        </div>
-    
-        <div class="details-item-Crew">
-            <div class="details-label">Crew</div>
-            <div class="details-content" id="crew-content"></div> <!-- Changed to id="crew-content" -->
-        </div>
-    
-        <div class="details-item-Awards">
-            <div class="details-label">Awards</div>
-            <div class="details-content" id="awards-content"></div> <!-- Changed to id="awards-content" -->
-        </div>
-    
-        <div class="details-item-BoxOffice">
-            <div class="details-label">Box Office</div>
-            <div class="details-content" id="boxoffice-content"></div> <!-- Changed to id="boxoffice-content" -->
-        </div>
+    <div id="dataCollected" class="container" style="display: none;">
+        <h1 style="color:#ebe5e6; font-size: 24px; font-weight: bold;">Thanks!! Your response was stored.</h1>
+        <input type="button" id="refreshPage" class="btn btn-danger" name="refreshPage" value="Take another attempt">
     </div>
-    
-    </body>
-    <!-- CSS for styling -->
-
+</div>
     <style>
-      
-        .error-card {
-            display: none;
+          .error-card {
+            display: none; /* Initially hide the error card */
             position: fixed;
             width: 350px;
             height: auto;
@@ -122,32 +92,60 @@
         .error-content {
             text-align: center;
         }
+      .scrollable-card-container {
+        max-height: 600px;
+        overflow-y: auto;
+    }
 
-        .scrollable-card-container {
-            max-height: 400px;
-            overflow-y: auto;
-        }
+    .info-box {
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        z-index: 10; /* Ensure it appears above other elements */
+        top: 100%; /* Position below the card */
+        left: 0; /* Align to the left */
+        display: none;
+    }
 
-        .card {
-            width: 100%;
-            background-color: #888888;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            font-size: 24px;
-            font-weight: bold;
-            color: white;
-        }
+    .card {
+        width: 100%;
+        background-color: #888888;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        font-size: 24px;
+        font-weight: bold;
+        color: white;
+        position: relative;
+    }
 
-        .card-container .card:not(:last-child) {
-            margin-bottom: 10px;
-        }
-
+    /* Add some spacing between cards */
+    .card-container .card:not(:last-child) {
+        margin-bottom: 10px;
+    }
         body {
             font-family: 'Noto Sans', sans-serif;
             background-color: #141414;
             color: white;
+            padding: 0px 0px 0px 0px;
+                /* background-image: url('https://wallpaperaccess.com/full/8212583.jpg'); /* Replace 'path_to_your_image.jpg' with the actual image URL */
+                background-size: cover;
+            
+        }
+        body::after {
+        content: "";
+        background: url("https://wallpaperaccess.com/full/8212583.jpg");
+        opacity: 0.5;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        position: absolute;
+        z-index: -1;   
         }
 
         .navbar {
@@ -157,141 +155,77 @@
         .navbar-brand {
             font-size: 24px;
             font-weight: bold;
+            color: rgb(229,9,20);
             display: inline-block;
-            color: rgb(229, 9, 20);
             float: none;
             padding: 15px 0;
             margin-left: 100px;
         }
 
-      
-    .details-container {
-        background-color: #4e4b4b;
-        padding: 20px;
-        width: 90%;
-        max-width: 600px;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-        margin-top: 45px;
-        float: right;
-        margin-right: 350px;
-    }
+        .container {
+            padding: 20px;
+        }
 
-    .details-container h3 {
-        font-size: 16px;
-        font-weight: 800;
-        margin-bottom: 5px;
-    }
+        h2 {
+            color: #e50914;
+            font-size: 24px;
+            font-weight: bold;
+        }
 
-    .details-container p {
-        font-size: 14px;
-        line-height: 1.5;
-        margin: 8px 0;
-        color: #b3b3b3;
-    }
+        label {
+            font-weight: bold;
+            font-size: 18px;
+        }
 
-    .details-container a {
-        color: #5098e7;
-        text-decoration: none;
-        font-weight: bold;
-    }
+        #searchBox {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            color: black;
+            border-radius: 5px;
+            font-size: 18px;
+        }
 
-    .details-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-top: 1px solid #333;
-        padding: 10px 0;
-    }
-    .details-item-Plot {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-top: 1px solid #333;
-        padding: 10px 0;
-    }
-    .details-item-Cast {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-top: 1px solid #333;
-        padding: 10px 0;
-    }
-    .details-item-Crew {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-top: 1px solid #333;
-        padding: 10px 0;
-    }
-    .details-item-Awards{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-top: 1px solid #333;
-        padding: 10px 0;
-    }
-    .details-item-BoxOffice{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-top: 1px solid #333;
-        padding: 10px 0;
-    }
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
 
-    .details-item:first-child {
-        border-top: none;
-    }
+        .card {
+            width: 45%;
+            margin-bottom: 20px;
+            background-color: #333 !important;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
 
-    .details-label {
-        color: #b3b3b3;
-        font-weight: bold;
-    }
+        .card h4 {
+            margin-bottom: 10px;
+            font-size: 20px;
+            font-weight: bold;
+        }
 
-    .details-content {
-        color: #e3e3e3;
-    }
-
-    .imdb-link {
-        display: block;
-        margin-top: 15px;
-        font-size: 14px;
-    }
-
-    .imdb-link a {
-        color: #5098e7;
-        font-weight: bold;
-        text-decoration: none;
-    }
-
-
-    #searchBox {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    color: black;
-    border-radius: 5px;
-    font-size: 18px;
-    }
-
-    .btn {
-    padding: 10px 20px;
-    font-size: 18px;
-    cursor: pointer;
-    }   
-           
+        .btn {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
     </style>
 
+</body>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script>
+
 <script>
+
     $(document).ready(function () {
         function displayErrorMessage(message) {
             $('#errorMessageText').text(message);
-            $('#errorMessage').show();
+            $('#errorMessage').show(); // Show the error card
             $('#main').css('opacity', '0.1');
-            $('#errorMessage').click(function () {
-                $('#errorMessage').hide();
-                $('#main').css('opacity', '1');
-            });
         }
 
         $(function () {
@@ -302,15 +236,21 @@
                         url: "http://localhost:5000/search",
                         dataType: "json",
                         cache: false,
-                        data: { q: request.term },
-                        success: function (data) { response(data); },
+                        data: {
+                            q: request.term
+                        },
+                        success: function (data) {
+                            //alert(data);
+                            // console.log(data);
+                            response(data);
+                        },
                         error: function (jqXHR, textStatus, errorThrown) {
                             console.log(textStatus + " " + errorThrown);
                         }
                     });
                 },
                 select: function (event, ui) {
-                    var ulList = $('#selectedMovies ul');
+                    var ulList = $('#selectedMovies');
                     var li = $('<li/>').text(ui.item.value).appendTo(ulList);
                     $('#searchBox').val("");
                     return false;
@@ -319,13 +259,14 @@
             });
         });
 
-        $("#predict").click(function () {
-            var movie_list = [];
-            $('#selectedMovies li').each(function () {
+        $("#predict").click( function(){
+            var movie_list = []
+
+            $('#selectedMovies li').each( function () {
                 movie_list.push($(this).text());
             });
 
-            var movies = { "movie_list": movie_list };
+            var movies = {"movie_list": movie_list};
 
             $.ajax({
                 type: "POST",
@@ -336,84 +277,181 @@
                 cache: false,
                 data: JSON.stringify(movies),
                 success: function (response) {
-                    $('#predictedMovies').empty();
-                    response['recommendations'].forEach(function (element) {
-                        var movieDetails = response['rating'][element];
-                        createMovieCard(element, movieDetails.poster, movieDetails.imdbRating, movieDetails.genre);
+                    var ulList = $('#predictedMovies');
+                    var i = 0;
+                    response['recommendations'].forEach(element => {
+                        // var diventry = $('<div/>');
+                        // var fieldset = $('<fieldset/>', {id:i}).css("border",'0');
+                        // var poster = $('<img>').attr('src', imageSrc);                        var li = $('<li/>').text(element);
+                        // var imdbRating = $('<li>').text("imdb: " + response['rating'][element+"-r"]);
+                        // var genre=$('<p/>').text("Genre: " + response['rating'][element+"-g"]);
+                        // var radios = $("<label class='radio-inline'><input type='radio' name="+i+" value=1>Dislike</label> \
+                        // <label class='radio-inline'><input type='radio' name="+i+" value=2>Yet to watch</label> \
+                        // <label class='radio-inline'><input type='radio' name="+i+" value=3>Like</label><br/><br/>");
+                        // diventry.append(li);
+                        // diventry.append(imdbRating);
+                        // diventry.append(genre);
+                        // diventry.append(radios);
+                        // fieldset.append(diventry);
+                        // ulList.append(fieldset);
+                        var card = document.createElement('div');
+                        card.className = 'card';
+                        card.style.margin='2.5%'
+                        card.style.width = '45%';
+                        card.style.padding = '5%';
+
+                        var image = document.createElement('img');
+                        image.src = response['rating'][element+"-p"];
+                        image.alt = 'Movie Poster';
+                        image.style.width='100%';
+                        card.appendChild(image);
+
+                        var cardBody = document.createElement('div');
+                        cardBody.className = 'card-body';
+
+                        var title = document.createElement('h3');
+                        title.className = 'card-title';
+                        title.textContent = element;
+
+                        var imdbRating = document.createElement('h5');
+                        imdbRating.className = 'card-text';
+                        imdbRating.textContent = 'imdb: ' + response['rating'][element + "-r"];
+
+                        var genre = document.createElement('h5');
+                        genre.className = 'card-text';
+                        genre.textContent = 'Genre: ' + response['rating'][element + "-g"];
+
+                        var radioButtons = document.createElement('div');
+                        radioButtons.className = 'radio-buttons';
+
+                        var QuestionLabel = document.createElement('label');
+                        QuestionLabel.className = 'radio-inline';
+                        QuestionLabel.innerHTML = '<h4>Give Feedback:';
+
+                        var dislikeLabel = document.createElement('label');
+                        dislikeLabel.className = 'radio-inline';
+                        dislikeLabel.innerHTML = '<input type="radio" name="i' + element + '" value="1"> Dislike';
+
+                        var yetToWatchLabel = document.createElement('label');
+                        yetToWatchLabel.className = 'radio-inline';
+                        yetToWatchLabel.innerHTML = '<input type="radio" name="i' + element + '" value="2"> Yet to watch';
+
+                        var likeLabel = document.createElement('label');
+                        likeLabel.className = 'radio-inline';
+                        likeLabel.innerHTML = '<input type="radio" name="i' + element + '" value="3"> Like';
+
+                        var card = document.createElement('div');
+                        card.className = 'card';
+                        card.style.margin = '2.5%';
+                        card.style.width = '45%';
+                        card.style.padding = '5%';
+
+                        var image = document.createElement('img');
+                        image.src = response['rating'][element + "-p"];
+                        image.alt = 'Movie Poster';
+                        image.style.width = '100%';
+                        card.appendChild(image);
+
+                        var cardBody = document.createElement('div');
+                        cardBody.className = 'card-body';
+
+                        var title = document.createElement('h3');
+                        title.className = 'card-title';
+                        title.textContent = element;
+
+                        // Additional information box
+                        var infoBox = document.createElement('div');
+                        infoBox.className = 'info-box';
+                        infoBox.innerHTML = `
+                            <p><strong>Plot:</strong> ${response['rating'][element + "-plot"]}</p>
+                            <p><strong>Cast:</strong> ${response['rating'][element + "-cast"]}</p>
+                            <p><strong>Box Office:</strong> ${response['rating'][element + "-boxoffice"]}</p>
+                        `;
+                        infoBox.style.display = 'none'; // Hide it initially
+                        card.appendChild(infoBox);
+
+                        // Append other elements to card body
+                        cardBody.appendChild(title);
+                        cardBody.appendChild(infoBox);
+                        card.appendChild(cardBody);
+                        document.getElementById('predictedMovies').appendChild(card);
+
+                        // Show info box on hover
+                        $(card).hover(
+                            function() {
+                                $(this).find('.info-box').fadeIn(200); // Show the info box
+                            },
+                            function() {
+                                $(this).find('.info-box').fadeOut(200); // Hide the info box
+                            }
+                        );
+                        
+                        radioButtons.appendChild(QuestionLabel);
+                        radioButtons.appendChild(dislikeLabel);
+                        radioButtons.appendChild(yetToWatchLabel);
+                        radioButtons.appendChild(likeLabel);
+
+                        cardBody.appendChild(title);
+                        cardBody.appendChild(imdbRating);
+                        cardBody.appendChild(genre);
+                        cardBody.appendChild(radioButtons);
+
+                        card.appendChild(cardBody);
+                        document.getElementById('predictedMovies').appendChild(card);
+                        return card;
+                        i+=1;
                     });
+
+                    // var li = $('<li/>').text()
+                    console.log("->", response['recommendations']);
                 },
                 error: function (error) {
-                    console.log("ERROR ->" + error);
+                    console.log("ERROR ->" + error );
                     displayErrorMessage("Error in fetching recommendations");
+
                 }
             });
         });
 
-        function createMovieCard(movieTitle, imageSrc, imdbRating, genre) {
-            var card = document.createElement('div');
-            card.className = 'card';
-            card.style.margin = '2.5%';
-            card.style.width = '45%';
-            card.style.padding = '5%';
-
-            var image = document.createElement('img');
-            image.src = imageSrc;
-            image.alt = 'Movie Poster';
-            image.style.width = '100%';
-            card.appendChild(image);
-
-            var cardBody = document.createElement('div');
-            cardBody.className = 'card-body';
-
-            var title = document.createElement('h3');
-            title.className = 'card-title';
-            title.textContent = movieTitle;
-
-            var imdbRatingElement = document.createElement('h5');
-            imdbRatingElement.className = 'card-text';
-            imdbRatingElement.textContent = 'IMDb: ' + imdbRating;
-
-            var genreElement = document.createElement('h5');
-            genreElement.className = 'card-text';
-            genreElement.textContent = 'Genre: ' + genre;
-
-            var viewReviewsButton = document.createElement('button');
-            viewReviewsButton.className = 'btn btn-primary view-reviews-button';
-            viewReviewsButton.textContent = 'View Reviews';
-            viewReviewsButton.onclick = function (event) {
-                showReviewBox(movieTitle, event);
+        $('#feedback').click(function(){
+            var myForm = $('fieldset');
+            var data = {};
+            var labels = {
+                1: 'Dislike',
+                2: 'Yet to watch',
+                3: 'Like'
             };
-
-            cardBody.appendChild(title);
-            cardBody.appendChild(imdbRatingElement);
-            cardBody.appendChild(genreElement);
-            cardBody.appendChild(viewReviewsButton);
-            card.appendChild(cardBody);
-
-            document.getElementById('predictedMovies').appendChild(card);
-        }
-
-        const API_URL = "API-Endpoint";
-        const movieID = "MOVIE_ID";
-
-        async function fetchMovieDetails() {
-            try {
-                const response = await fetch(`${API_URL}/movies/${movieID}`);
-                const data = await response.json();
-
-                document.getElementById('plot-content').innerText = data.plot || "Not available";
-                document.getElementById('cast-content').innerHTML = formatLinks(data.cast);
-                document.getElementById('crew-content').innerHTML = formatLinks(data.crew);
-                document.getElementById('awards-content').innerText = data.awards || "Not available";
-                document.getElementById('boxoffice-content').innerText = data.boxOffice || "Not available";
-            } catch (error) {
-                console.error("Error fetching movie details:", error);
+            for(var i=0;i<myForm.length;i++){
+                var input = $('#'+i).find('div').find('input:checked')[0].value;
+                var movieName = $('#'+i).find('div').find('li')[0].innerText;
+                data[movieName]=labels[input];
             }
-        }
+            console.log(data);
 
-        fetchMovieDetails();
+            $.ajax({
+                type: "POST",
+                url: "/feedback",
+                dataType: "json",
+                contentType: "application/json;charset=UTF-8",
+                traditional: "true",
+                cache: false,
+                data: JSON.stringify(data),
+                success: function (response) {
+                    // console.log("->", response);
+                    // $("#dataCollected").css("display", "block");
+                    window.location.href="/success";
+                },
+                error: function (error) {
+                    console.log("ERROR ->" + error );
+                    displayErrorMessage("Please fill in all the fields");
+                }
+            });
+
+        });
+
+
     });
+
 </script>
 
-</body>
 </html>

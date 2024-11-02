@@ -1,6 +1,7 @@
 import pandas as pd
 import sys
 import requests
+import os
 
 sys.path.append("../../")
 
@@ -45,9 +46,33 @@ def suggest_movies(feedback_data, dataset):
         sampled_rows = dataset.sample(n=10)
         recommended_list = sampled_rows.to_dict(orient='records')
     print("Recommended List Post Random Sampling: ", recommended_list)    
+    
+    current_path = os.getcwd()
+    data_path = os.path.abspath(os.path.join(current_path, "../.."))
+    data_path = os.path.join(os.path.join(data_path, "data"), "enriched_movies.csv")
+    enriched_dataset = pd.read_csv(data_path)
+    enriched_dataset.fillna("NA", inplace=True)
+    plot_dict = dict()
+    cast_dict = dict()
+    boxOffice_dict = dict()
     for movie_detail in recommended_list:
         movie_info = get_movie_info(movie_detail["title"])
         movie_detail["poster"] = movie_info["Poster"]
         movie_detail["genre"] = movie_info["Genre"]
         movie_detail["imdbRating"] = movie_info["imdbRating"]
+
+        limit = len(movie_detail["title"])-7
+        movie_name = movie_detail["title"][:limit]
+        if movie_name in list(enriched_dataset["title"]):
+            plot = str(enriched_dataset[enriched_dataset["title"]==movie_name]["plot"].values[0])
+            cast = enriched_dataset[enriched_dataset["title"]==movie_name]["cast"].values[0]
+            boxOffice = enriched_dataset[enriched_dataset["title"]==movie_name]["boxOffice"].values[0]
+
+            plot = plot if isinstance(plot, str) else "NA"
+            cast = cast if isinstance(cast, str) else "NA"
+            boxOffice = boxOffice if isinstance(boxOffice, str) else "NA"
+
+            movie_detail["plot"] = plot
+            movie_detail["cast"] = cast
+            movie_detail["boxOffice"] = boxOffice
     return recommended_list

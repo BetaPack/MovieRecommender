@@ -285,6 +285,7 @@
                         card.style.margin='2.5%'
                         card.style.width = '45%';
                         card.style.padding = '5%';
+                        console.log(response)
 
                         var image = document.createElement('img');
                         image.src = response['rating'][element+"-p"];
@@ -346,12 +347,18 @@
                         title.textContent = element;
 
                         // Additional information box
+                        var plot = response["plot"][element] || "N/A";
+                        var cast = response["cast"][element] || "N/A";
+                        var boxOffice = response["boxOffice"][element] || "N/A";
+
+                        console.log(`Movie: ${element}, Plot: ${plot}, Cast: ${cast}, Box Office: ${boxOffice}`);
+
                         var infoBox = document.createElement('div');
                         infoBox.className = 'info-box';
                         infoBox.innerHTML = `
-                            <p><strong>Plot:</strong> ${response['rating'][element + "-plot"]}</p>
-                            <p><strong>Cast:</strong> ${response['rating'][element + "-cast"]}</p>
-                            <p><strong>Box Office:</strong> ${response['rating'][element + "-boxoffice"]}</p>
+                            <p style="font-size: 12px;"><strong>Plot:</strong> ${response["plot"][element]}</p>
+                            <p style="font-size: 12px;"><strong>Cast:</strong> ${response["cast"][element]}</p>
+                            <p style="font-size: 12px;"><strong>Box Office:</strong> ${response["boxOffice"][element]}</p>
                         `;
                         infoBox.style.display = 'none'; // Hide it initially
                         card.appendChild(infoBox);
@@ -454,11 +461,15 @@
                     $('<label class="radio-inline">').html('<input type="radio" name="feedback-' + movie.title + '" value="2"> Yet to watch'),
                     $('<label class="radio-inline">').html('<input type="radio" name="feedback-' + movie.title + '" value="3"> Like')
                 );
+                
+                var plot = movie["plot"][movie.title] || "N/A";
+                var cast = movie["cast"][movie.title] || "N/A";
+                var boxOffice = movie["boxOffice"][movie.title] || "N/A";
 
                 var infoBox = $('<div/>', { class: 'info-box', html: `
-                    <p><strong>Plot:</strong> NA</p>
-                    <p><strong>Cast:</strong> NA</p>
-                    <p><strong>Box Office:</strong> NA</p>
+                    <p style="font-size: 12px;"><strong>Plot:</strong> ${movie.plot}</p>
+                    <p style="font-size: 12px;"><strong>Cast:</strong> ${movie.cast} </p>
+                    <p style="font-size: 12px;"><strong>Box Office:</strong> ${movie.boxOffice} </p>
                 ` });
 
                 infoBox.css({

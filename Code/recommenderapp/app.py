@@ -6,6 +6,7 @@ import csv
 import time
 import os
 import pandas as pd
+import math
 
 sys.path.append("../../")
 from Code.user_based_suggestions.user_based_suggestions  import suggest_movies
@@ -41,24 +42,6 @@ def landing_page():
 
 
 @app.route("/predict", methods=["POST"])
-# def predict():
-#     data = json.loads(request.data)  # contains movies
-#     data1 = data["movie_list"]
-#     training_data = []
-#     for movie in data1:
-#         movie_with_rating = {"title": movie, "rating": 5.0}
-#         training_data.append(movie_with_rating)
-#     recommendations = recommendForNewUser(movie_with_rating)
-    
-#     for movie in data1:    
-#         movie_info = get_movie_info(movie)
-#         if movie_info:
-#             movie_with_rating["title"]=movie
-#             movie_with_rating["rating"]=movie_info["imdbRating"]
-    
-#     recommendations = recommendations[:10]
-#     resp = {"recommendations": recommendations}
-#     return resp
 def predict():
     data = json.loads(request.data)  # contains movies
     data1 = data["movie_list"]
@@ -69,15 +52,42 @@ def predict():
     recommendations = recommendForNewUser(training_data)
     recommendations = recommendations[:10]
 
+    plot_dict = dict()
+    cast_dict = dict()
+    boxOffice_dict = dict()
+
+    current_path = os.getcwd()
+    data_path = os.path.abspath(os.path.join(current_path, "../.."))
+    data_path = os.path.join(os.path.join(data_path, "data"), "enriched_movies.csv")
+    dataset = pd.read_csv(data_path)
+    dataset.fillna("NA", inplace=True)
+
     for movie in recommendations:
         movie_info = get_movie_info(movie)
-        # print(movie_info['imdbRating'])
+
+        limit = len(movie)-7
+        movie_name = movie[:limit]
+        if movie_name in list(dataset["title"]):
+            plot = str(dataset[dataset["title"]==movie_name]["plot"].values[0])
+            cast = dataset[dataset["title"]==movie_name]["cast"].values[0]
+            boxOffice = dataset[dataset["title"]==movie_name]["boxOffice"].values[0]
+
+            plot = plot if isinstance(plot, str) else "NA"
+            cast = cast if isinstance(cast, str) else "NA"
+            boxOffice = boxOffice if isinstance(boxOffice, str) else "NA"
+
+            plot_dict[movie] = plot
+            cast_dict[movie] = cast
+            boxOffice_dict[movie] = boxOffice
+
+
         if movie_info:
             movie_with_rating[movie+"-r"]=movie_info['imdbRating']
             movie_with_rating[movie+"-g"]=movie_info['Genre']
             movie_with_rating[movie+"-p"]=movie_info['Poster']
 
-    resp = {"recommendations": recommendations, "rating":movie_with_rating}
+    resp = {"recommendations": recommendations, "rating":movie_with_rating, "plot": plot_dict, "cast": cast_dict, "boxOffice": boxOffice_dict}
+    print("Response from predict function:", resp)
     return resp
 
 @app.route("/search", methods=["POST"])
@@ -104,13 +114,13 @@ def success():
 @app.route('/get_suggestions', methods=['POST'])
 def get_suggestions():
     feedback_data = request.json  # Feedback data collected from frontend
-    print("Feedback data received:", feedback_data)
     current_path = os.getcwd()
     data_path = os.path.abspath(os.path.join(current_path, "../.."))
     data_path = os.path.join(os.path.join(data_path, "data"), "movies.csv")
     dataset = pd.read_csv(data_path)
     recommendations = suggest_movies(feedback_data, dataset)
-    print("Recommendations:", recommendations)
+    info = dict()
+    
     return jsonify({"recommendations": recommendations})
 
 if __name__ == "__main__":

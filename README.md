@@ -1,4 +1,6 @@
 # <i>Movie Recommendation 🎥 </i>
+# <i>Group 85: Aditya Singh | Bahare Riahi | Monish Erode Sridhar</i>
+
     A collaborative filtering based recommendation engine!
 
 
@@ -13,7 +15,7 @@
 
 Discover Your Next Movie Night Gem!<br>
 Tired of endless scrolling, trying to find the perfect movie? 🍿<br><br>
-<img width="400" height="250" alt="color picker" src="https://github.com/MadhurDixit13/MovieRecommender/blob/master/asset/Front-page.gif?raw=true" /><br><br>
+[![Watch the video](https://markdown-videos-api.jorgenkh.no/youtube/o7dgdgXoW98)](https://youtu.be/o7dgdgXoW98)
 
 # <b>Contents</b>
 
@@ -57,10 +59,7 @@ Make sure you taste your own medicine first and take into account other peoples 
 
 ## Video ▶️ 
 
-[![Watch the video](https://markdown-videos-api.jorgenkh.no/youtube/uYQ4t7GOEyU)](https://youtu.be/uYQ4t7GOEyU)
-
-
-
+[![Watch the video](https://markdown-videos-api.jorgenkh.no/youtube/jeDLFBuE81o)](https://youtu.be/jeDLFBuE81o)
 
 
 
@@ -133,8 +132,6 @@ JavaScript is a versatile and widely used programming language for adding intera
 ## Usage
 1. `cd Code/recommenderapp`
 2. `python3 app.py`
-
-![Execution](https://raw.githubusercontent.com/MadhurDixit13/MovieRecommender/master/asset/execution.gif)
 
 
 ## Documentation 📚

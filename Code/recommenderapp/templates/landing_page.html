@@ -62,7 +62,7 @@
                 <div class="scrollable-card-container">
                     <div id="predictedMovies" class="card-container"></div>
                 </div>
-                <input type="button" class="btn btn-danger" name="feedback" id="feedback" value="Give Feedback">
+                <input type="button" class="btn btn-danger" name="suggest" id="suggest" value="Suggest">
             </div>
         </div>
     </div>
@@ -93,21 +93,35 @@
             text-align: center;
         }
       .scrollable-card-container {
-        max-height: 400px;
+        max-height: 600px;
         overflow-y: auto;
     }
 
+    .info-box {
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        z-index: 10; /* Ensure it appears above other elements */
+        top: 100%; /* Position below the card */
+        left: 0; /* Align to the left */
+        display: none;
+    }
+
     .card {
-    width: 100%;
-    background-color: #888888;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    font-size: 24px;
-    font-weight: bold;
-    color: white;
-}
+        width: 100%;
+        background-color: #888888;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        font-size: 24px;
+        font-weight: bold;
+        color: white;
+        position: relative;
+    }
 
     /* Add some spacing between cards */
     .card-container .card:not(:last-child) {
@@ -266,25 +280,12 @@
                     var ulList = $('#predictedMovies');
                     var i = 0;
                     response['recommendations'].forEach(element => {
-                        // var diventry = $('<div/>');
-                        // var fieldset = $('<fieldset/>', {id:i}).css("border",'0');
-                        // var poster = $('<img>').attr('src', imageSrc);                        var li = $('<li/>').text(element);
-                        // var imdbRating = $('<li>').text("imdb: " + response['rating'][element+"-r"]);
-                        // var genre=$('<p/>').text("Genre: " + response['rating'][element+"-g"]);
-                        // var radios = $("<label class='radio-inline'><input type='radio' name="+i+" value=1>Dislike</label> \
-                        // <label class='radio-inline'><input type='radio' name="+i+" value=2>Yet to watch</label> \
-                        // <label class='radio-inline'><input type='radio' name="+i+" value=3>Like</label><br/><br/>");
-                        // diventry.append(li);
-                        // diventry.append(imdbRating);
-                        // diventry.append(genre);
-                        // diventry.append(radios);
-                        // fieldset.append(diventry);
-                        // ulList.append(fieldset);
                         var card = document.createElement('div');
                         card.className = 'card';
                         card.style.margin='2.5%'
                         card.style.width = '45%';
                         card.style.padding = '5%';
+                        console.log(response)
 
                         var image = document.createElement('img');
                         image.src = response['rating'][element+"-p"];
@@ -325,6 +326,58 @@
                         var likeLabel = document.createElement('label');
                         likeLabel.className = 'radio-inline';
                         likeLabel.innerHTML = '<input type="radio" name="i' + element + '" value="3"> Like';
+
+                        var card = document.createElement('div');
+                        card.className = 'card';
+                        card.style.margin = '2.5%';
+                        card.style.width = '45%';
+                        card.style.padding = '5%';
+
+                        var image = document.createElement('img');
+                        image.src = response['rating'][element + "-p"];
+                        image.alt = 'Movie Poster';
+                        image.style.width = '100%';
+                        card.appendChild(image);
+
+                        var cardBody = document.createElement('div');
+                        cardBody.className = 'card-body';
+
+                        var title = document.createElement('h3');
+                        title.className = 'card-title';
+                        title.textContent = element;
+
+                        // Additional information box
+                        var plot = response["plot"][element] || "N/A";
+                        var cast = response["cast"][element] || "N/A";
+                        var boxOffice = response["boxOffice"][element] || "N/A";
+
+                        console.log(`Movie: ${element}, Plot: ${plot}, Cast: ${cast}, Box Office: ${boxOffice}`);
+
+                        var infoBox = document.createElement('div');
+                        infoBox.className = 'info-box';
+                        infoBox.innerHTML = `
+                            <p style="font-size: 12px;"><strong>Plot:</strong> ${response["plot"][element]}</p>
+                            <p style="font-size: 12px;"><strong>Cast:</strong> ${response["cast"][element]}</p>
+                            <p style="font-size: 12px;"><strong>Box Office:</strong> ${response["boxOffice"][element]}</p>
+                        `;
+                        infoBox.style.display = 'none'; // Hide it initially
+                        card.appendChild(infoBox);
+
+                        // Append other elements to card body
+                        cardBody.appendChild(title);
+                        cardBody.appendChild(infoBox);
+                        card.appendChild(cardBody);
+                        document.getElementById('predictedMovies').appendChild(card);
+
+                        // Show info box on hover
+                        $(card).hover(
+                            function() {
+                                $(this).find('.info-box').fadeIn(200); // Show the info box
+                            },
+                            function() {
+                                $(this).find('.info-box').fadeOut(200); // Hide the info box
+                            }
+                        );
                         
                         radioButtons.appendChild(QuestionLabel);
                         radioButtons.appendChild(dislikeLabel);
@@ -353,41 +406,100 @@
             });
         });
 
-        $('#feedback').click(function(){
-            var myForm = $('fieldset');
-            var data = {};
-            var labels = {
+        $('#suggest').click(function() {
+            const data = {};
+            const labels = {
                 1: 'Dislike',
                 2: 'Yet to watch',
                 3: 'Like'
             };
-            for(var i=0;i<myForm.length;i++){
-                var input = $('#'+i).find('div').find('input:checked')[0].value;
-                var movieName = $('#'+i).find('div').find('li')[0].innerText;
-                data[movieName]=labels[input];
-            }
-            console.log(data);
 
-            $.ajax({
-                type: "POST",
-                url: "/feedback",
-                dataType: "json",
-                contentType: "application/json;charset=UTF-8",
-                traditional: "true",
-                cache: false,
-                data: JSON.stringify(data),
-                success: function (response) {
-                    // console.log("->", response);
-                    // $("#dataCollected").css("display", "block");
-                    window.location.href="/success";
-                },
-                error: function (error) {
-                    console.log("ERROR ->" + error );
-                    displayErrorMessage("Please fill in all the fields");
+            // Loop through each card to capture user feedback
+            $('#predictedMovies .card').each(function(index) {
+                const movieTitle = $(this).find('.card-title').text();
+                const feedbackValue = $(this).find('input[type="radio"]:checked').val();
+
+                if (feedbackValue) {
+                    data[movieTitle] = labels[feedbackValue];
                 }
             });
 
+            console.log("Collected feedback data:", data);
+
+            // Send feedback data to the backend for new suggestions
+            $.ajax({
+                type: "POST",
+                url: "/get_suggestions",
+                dataType: "json",
+                contentType: "application/json;charset=UTF-8",
+                traditional: true,
+                data: JSON.stringify(data),
+                success: function(response) {
+                    displayMovies(response.recommendations); // Display new recommendations
+                },
+                error: function(error) {
+                    console.error("ERROR:", error);
+                    displayErrorMessage("Error fetching new recommendations");
+                }
+            });
         });
+
+        // Function to display movies in the predictedMovies container
+        function displayMovies(recommendations) {
+            const container = $('#predictedMovies');
+            container.empty(); // Clear previous recommendations
+
+            recommendations.forEach(movie => {
+                const card = $('<div/>', { class: 'card', style: 'margin: 2.5%; width: 45%; padding: 5%' });
+                const image = $('<img/>', { src: movie.poster, alt: 'Movie Poster', style: 'width: 100%' });
+                const title = $('<h3/>', { class: 'card-title', text: movie.title });
+                const imdbRating = $('<h5/>', { class: 'card-text', text: 'IMDb: ' + movie.imdbRating });
+                const genre = $('<h5/>', { class: 'card-text', text: 'Genre: ' + movie.genre });
+
+                const radioButtons = $('<div/>', { class: 'radio-buttons' }).append(
+                    $('<label class="radio-inline">').html('<input type="radio" name="feedback-' + movie.title + '" value="1"> Dislike'),
+                    $('<label class="radio-inline">').html('<input type="radio" name="feedback-' + movie.title + '" value="2"> Yet to watch'),
+                    $('<label class="radio-inline">').html('<input type="radio" name="feedback-' + movie.title + '" value="3"> Like')
+                );
+                
+                var plot = movie["plot"][movie.title] || "N/A";
+                var cast = movie["cast"][movie.title] || "N/A";
+                var boxOffice = movie["boxOffice"][movie.title] || "N/A";
+
+                var infoBox = $('<div/>', { class: 'info-box', html: `
+                    <p style="font-size: 12px;"><strong>Plot:</strong> ${movie.plot}</p>
+                    <p style="font-size: 12px;"><strong>Cast:</strong> ${movie.cast} </p>
+                    <p style="font-size: 12px;"><strong>Box Office:</strong> ${movie.boxOffice} </p>
+                ` });
+
+                infoBox.css({
+                    display: 'none', // Start hidden
+                    position: 'absolute',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    color: 'white',
+                    padding: '10px',
+                    borderRadius: '5px',
+                    zIndex: 1000,
+                    top: '100%', // Position below the card
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: '100%'
+                });
+
+                card.append(image, title, imdbRating, genre, radioButtons, infoBox);
+                container.append(card);
+
+                // Show tooltip on hover
+                $(card).hover(
+                    function() {
+                        infoBox.fadeIn(200); // Show the info box
+                    },
+                    function() {
+                        infoBox.fadeOut(200); // Hide the info box
+                    }
+                );
+            });
+        }
 
 
     });

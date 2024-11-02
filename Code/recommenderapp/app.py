@@ -155,7 +155,7 @@ def get_youtube_trailer(movie_name):
             return f"https://www.youtube.com/watch?v={video_id}"
     return "#"  # Default if no trailer is found
 
-@app.route("/")
+@app.route("/login")
 def logsign_page():
     return render_template("logsign.html")
 
@@ -163,13 +163,12 @@ def logsign_page():
 def signup_page():
     return render_template("signup.html")
 
-@app.route("/landing", methods=["GET"])
+@app.route("/", methods=["GET"])
 def landing_page():
     if 'user' in session:  # Check if user is logged in
         return render_template("landing_page.html")
     return redirect(url_for('logsign_page'))
 
-@app.route("/", methods=["POST"])
 @app.route("/", methods=["POST"])
 def login():
     # Load users again to ensure we're checking the latest data

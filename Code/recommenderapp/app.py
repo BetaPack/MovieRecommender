@@ -41,9 +41,7 @@ def load_users():
 
     df = pd.read_csv(USER_CSV)
     df.columns = df.columns.str.strip()  # Strip whitespace from column headers
-    
-    print(df.head())  # Debugging line
-    
+        
     if 'email' not in df.columns or 'password' not in df.columns:
         raise ValueError("CSV file does not contain required columns 'email' and 'password'.")
 
@@ -155,7 +153,7 @@ def get_youtube_trailer(movie_name):
             return f"https://www.youtube.com/watch?v={video_id}"
     return "#"  # Default if no trailer is found
 
-@app.route("/login")
+@app.route("/")
 def logsign_page():
     return render_template("logsign.html")
 
@@ -163,7 +161,7 @@ def logsign_page():
 def signup_page():
     return render_template("signup.html")
 
-@app.route("/", methods=["GET"])
+@app.route("/landing", methods=["GET"])
 def landing_page():
     if 'user' in session:  # Check if user is logged in
         return render_template("landing_page.html")

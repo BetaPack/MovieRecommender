@@ -1,4 +1,4 @@
-name: Codecov Upload
+name: Aditya's Test Workflow
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  codecov:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,7 +27,14 @@ jobs:
           pip install -r requirements.txt
 
       - name: Set PYTHONPATH
-        run: echo "PYTHONPATH=$(pwd)/Code" >> $GITHUB_ENV
+        run: |
+          echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV  # Assuming the root folder contains Code
+
+      # Start server or setup environment if needed
+      - name: Start Application Server (Optional)
+        run: |
+          # Uncomment and modify the following lines if a server is needed
+          # nohup python path/to/your_server.py &
 
       - name: Run Tests
         run: |

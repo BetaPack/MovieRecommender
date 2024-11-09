@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Create Account - Movie Recommendations</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="main">
+        <nav class="navbar navbar-inverse" style="background-color: rgba(0, 0, 0, 0.5);">
+            <div class="container">
+                <div class="navbar-header text-center">
+                    <h1 class="navbar-brand" style="color:#d9534f; font-size: 30px;">MOVIE RECOMMENDATIONS</h1>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            <h2 style="color:#ebe5e6; font-size: 24px; font-weight: bold;">Create Password</h2>
+            <form id="passwordForm">
+                <div class="form-group">
+                    <label for="signupPassword" style="color:#ebe5e6; font-weight: bold;">Password:</label>
+                    <input type="password" class="form-control" id="signupPassword" required>
+                </div>
+                <button type="submit" class="btn btn-danger">Create Account</button>
+            </form>
+            <p style="color:#ebe5e6;">Already have an account? <a href="/" style="color:#d9534f;">Login</a></p>
+        </div>
+    </div>
+
+    <style>
+        /* Styling here can be the same as in signup.html */
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            $('#passwordForm').submit(function (event) {
+                event.preventDefault();
+                var email = localStorage.getItem('email');  // Retrieve email from local storage
+                var password = $('#signupPassword').val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/create-account",
+                    contentType: "application/json",
+                    data: JSON.stringify({ email: email, password: password }),
+                    success: function (response) {
+                        if (response.success) {
+                            alert(response.message);
+                            window.location.href = "/";  // Redirect to login page
+                        } else {
+                            alert("User not verified or an error occurred.");
+                        }
+                    },
+                    error: function () {
+                        alert("An error occurred while creating the account.");
+                    }
+                });
+            });
+        });
+
+        function showAlert(success, message) {
+            if (success) {
+                swal("Success!", message, "success");
+            } else {
+                swal("Error!", message, "error");
+            }
+        }
+    </script>
+</body>
+
+</html>

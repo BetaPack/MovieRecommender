@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Verify OTP - Movie Recommendations</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="main">
+        <nav class="navbar navbar-inverse" style="background-color: rgba(0, 0, 0, 0.5);">
+            <div class="container">
+                <div class="navbar-header text-center">
+                    <h1 class="navbar-brand" style="color:#d9534f; font-size: 30px;">MOVIE RECOMMENDATIONS</h1>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            <h2 style="color:#ebe5e6; font-size: 24px; font-weight: bold;">Verify OTP</h2>
+            <form id="otpForm">
+                <div class="form-group">
+                    <label for="otp" style="color:#ebe5e6; font-weight: bold;">Enter OTP:</label>
+                    <input type="text" class="form-control" id="otp" required>
+                </div>
+                <button type="submit" class="btn btn-danger">Verify OTP</button>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        /* Styling here can be the same as in signup.html */
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            $('#otpForm').submit(function (event) {
+                event.preventDefault();
+                var email = localStorage.getItem('email');  // Store email in local storage in signup.html
+                var otp = $('#otp').val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/verify-otp",
+                    contentType: "application/json",
+                    data: JSON.stringify({ email: email, otp: otp }),
+                    success: function (response) {
+                        if (response.success) {
+                            alert(response.message);
+                            window.location.href = "/account";  // Redirect to create password
+                        } else {
+                            alert("Invalid OTP. Please try again.");
+                        }
+                    },
+                    error: function () {
+                        alert("An error occurred while verifying OTP.");
+                    }
+                });
+            });
+        });
+        function showAlert(success, message) {
+            if (success) {
+                swal("Success!", message, "success");
+            } else {
+                swal("Error!", message, "error");
+            }
+        }
+    </script>
+</body>
+
+</html>

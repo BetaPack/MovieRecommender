@@ -81,6 +81,13 @@
     $("#refreshPage").click(function(){
         window.location.href="/";
     });
+    function showAlert(success, message) {
+            if (success) {
+                swal("Success!", message, "success");
+            } else {
+                swal("Error!", message, "error");
+            }
+        }
 </script>
 
 </html>

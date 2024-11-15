@@ -308,6 +308,11 @@
                         genre.className = 'card-text';
                         genre.textContent = 'Genre: ' + response['rating'][element + "-g"];
 
+                        var trailer = document.createElement('a');
+                        trailer.href = response['rating'][element + "-t"];
+                        trailer.target = "_blank";
+                        trailer.textContent = "Watch Trailer";
+
                         var radioButtons = document.createElement('div');
                         radioButtons.className = 'radio-buttons';
 
@@ -387,6 +392,7 @@
                         cardBody.appendChild(title);
                         cardBody.appendChild(imdbRating);
                         cardBody.appendChild(genre);
+                        cardBody.appendChild(trailer);
                         cardBody.appendChild(radioButtons);
 
                         card.appendChild(cardBody);
@@ -451,7 +457,13 @@
 
             recommendations.forEach(movie => {
                 const card = $('<div/>', { class: 'card', style: 'margin: 2.5%; width: 45%; padding: 5%' });
-                const image = $('<img/>', { src: movie.poster, alt: 'Movie Poster', style: 'width: 100%' });
+                const trailerUrl = movie.trailer_url || 'https://www.youtube.com'; // Default to YouTube homepage if no trailer found
+                const image = $('<a/>', {
+                        href: trailerUrl,
+                        target: '_blank'
+                    }).append(
+                        $('<img/>', { src: movie.poster, alt: `${movie.title} Poster`, style: 'width: 100%' })
+                    );
                 const title = $('<h3/>', { class: 'card-title', text: movie.title });
                 const imdbRating = $('<h5/>', { class: 'card-text', text: 'IMDb: ' + movie.imdbRating });
                 const genre = $('<h5/>', { class: 'card-text', text: 'Genre: ' + movie.genre });

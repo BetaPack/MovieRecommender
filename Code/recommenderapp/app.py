@@ -278,6 +278,22 @@ def predict():
     for movie in recommendations:
         movie_info = get_movie_info(movie)
         # print(movie_info['imdbRating'])
+
+        limit = len(movie)-7
+        movie_name = movie[:limit]
+        if movie_name in list(dataset["title"]):
+            plot = str(dataset[dataset["title"]==movie_name]["plot"].values[0])
+            cast = dataset[dataset["title"]==movie_name]["cast"].values[0]
+            boxOffice = dataset[dataset["title"]==movie_name]["boxOffice"].values[0]
+
+            plot = plot if isinstance(plot, str) else "NA"
+            cast = cast if isinstance(cast, str) else "NA"
+            boxOffice = boxOffice if isinstance(boxOffice, str) else "NA"
+
+            plot_dict[movie] = plot
+            cast_dict[movie] = cast
+            boxOffice_dict[movie] = boxOffice
+            
         if movie_info:
             movie_with_rating[movie + "-r"] = movie_info['imdbRating']
             movie_with_rating[movie + "-g"] = movie_info['Genre']
